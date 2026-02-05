@@ -13,12 +13,13 @@ class RevenueIntelligence:
         }
 
     def calculate_scenario(self, discount_cap, optimize_shipping, selected_categories):
-        filtered = self.df[self.df['Category'].isin(selected_categories)].copy()
+        # Use ML engine's preprocessed df so filtered has CategoryEncoded, PaymentEncoded, OrderMonth
+        filtered = self.ml.df[self.ml.df["Category"].isin(selected_categories)].copy()
 
         if len(filtered) == 0:
             return None
 
-        current_discount_avg = filtered['Discount'].mean()
+        current_discount_avg = filtered["Discount"].mean()
         discount_savings = 0
 
         if current_discount_avg > discount_cap:
