@@ -6,54 +6,31 @@ import streamlit as st
 
 
 def render_hero(baseline, metrics):
-    st.markdown(
-        """
-        <div style="
-            background: linear-gradient(135deg, #2C3E50 0%, #1a252f 100%);
-            border-radius: 16px;
-            padding: 32px 40px;
-            margin-bottom: 24px;
-            color: #FFF8E7;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-        ">
-            <h1 style="margin: 0 0 8px 0; font-size: 2rem; font-weight: 700; color: #FFF8E7;">
-                💰 Data to $$$ Revenue Leak Detector
-            </h1>
-            <p style="margin: 0 0 24px 0; opacity: 0.9; font-size: 1.05rem;">
-                Dr. Data Decision Intelligence — ML-powered revenue impact and risk detection
-            </p>
-            <div style="display: flex; flex-wrap: wrap; gap: 24px;">
-                <div>
-                    <span style="color: #4ECDC4; font-weight: 600;">Baseline Revenue</span>
-                    <div style="font-size: 1.5rem; font-weight: 700;">${:,.0f}</div>
-                </div>
-                <div>
-                    <span style="color: #4ECDC4; font-weight: 600;">Orders</span>
-                    <div style="font-size: 1.5rem; font-weight: 700;">{:,.0f}</div>
-                </div>
-                <div>
-                    <span style="color: #4ECDC4; font-weight: 600;">Avg Order Value</span>
-                    <div style="font-size: 1.5rem; font-weight: 700;">${:,.2f}</div>
-                </div>
-                <div>
-                    <span style="color: #4ECDC4; font-weight: 600;">Cancellation Rate</span>
-                    <div style="font-size: 1.5rem; font-weight: 700;">{:.1%}</div>
-                </div>
-                <div>
-                    <span style="color: #4ECDC4; font-weight: 600;">Model R²</span>
-                    <div style="font-size: 1.5rem; font-weight: 700;">{:.2%}</div>
-                </div>
-            </div>
-        </div>
-        """.format(
-            baseline['revenue'],
-            baseline['orders'],
-            baseline['avg_order_value'],
-            baseline['cancellation_rate'],
-            metrics['regression']['R2']
-        ),
-        unsafe_allow_html=True,
-    )
+    rev = baseline["revenue"]
+    orders = baseline["orders"]
+    aov = baseline["avg_order_value"]
+    cancel_pct = baseline["cancellation_rate"] * 100
+    r2_pct = metrics["regression"]["R2"] * 100
+    html = (
+        "<div style=\"background:#2C3E50;border-radius:16px;padding:32px 40px;margin-bottom:24px;color:#FFF8E7;\">"
+        "<h1 style=\"margin:0 0 8px 0;font-size:2rem;font-weight:700;color:#FFF8E7;\">"
+        "Data to $$$ Revenue Leak Detector</h1>"
+        "<p style=\"margin:0 0 24px 0;opacity:0.9;font-size:1.05rem;\">"
+        "Dr. Data Decision Intelligence — ML-powered revenue impact and risk detection</p>"
+        "<div style=\"display:flex;flex-wrap:wrap;gap:24px;\">"
+        "<div><span style=\"color:#4ECDC4;font-weight:600;\">Baseline Revenue</span>"
+        "<div style=\"font-size:1.5rem;font-weight:700;\">${:,.0f}</div></div>"
+        "<div><span style=\"color:#4ECDC4;font-weight:600;\">Orders</span>"
+        "<div style=\"font-size:1.5rem;font-weight:700;\">{:,.0f}</div></div>"
+        "<div><span style=\"color:#4ECDC4;font-weight:600;\">Avg Order Value</span>"
+        "<div style=\"font-size:1.5rem;font-weight:700;\">${:,.2f}</div></div>"
+        "<div><span style=\"color:#4ECDC4;font-weight:600;\">Cancellation Rate</span>"
+        "<div style=\"font-size:1.5rem;font-weight:700;\">{:.1f} pct</div></div>"
+        "<div><span style=\"color:#4ECDC4;font-weight:600;\">Model R2</span>"
+        "<div style=\"font-size:1.5rem;font-weight:700;\">{:.2f} pct</div></div>"
+        "</div></div>"
+    ).format(rev, orders, aov, cancel_pct, r2_pct)
+    st.markdown(html, unsafe_allow_html=True)
 
 
 def render_controls(category_list):
@@ -93,50 +70,36 @@ def render_impact_dashboard(results, metrics):
     with col1:
         st.metric(
             "Annual savings (est.)",
-            f"${r['annual_savings']:,.0f}",
-            f"{r['roi_percentage']:.1f} pct of baseline",
+            "${:,.0f}".format(r["annual_savings"]),
+            "{:.1f} pct of baseline".format(r["roi_percentage"]),
         )
     with col2:
-        st.metric("Discount recovery", f"${r['discount_recovery']:,.0f}", "From cap")
+        st.metric("Discount recovery", "${:,.0f}".format(r["discount_recovery"]), "From cap")
     with col3:
-        st.metric("Shipping savings", f"${r['shipping_savings']:,.0f}", "Optimization")
+        st.metric("Shipping savings", "${:,.0f}".format(r["shipping_savings"]), "Optimization")
     with col4:
-        st.metric("Risk prevention", f"${r['risk_prevention']:,.0f}", f"{r['high_risk_orders']} orders")
+        st.metric("Risk prevention", "${:,.0f}".format(r["risk_prevention"]), "{} orders".format(r["high_risk_orders"]))
 
-    st.markdown(
-        """
-        <div style="
-            background: #FFFFFF;
-            border: 1px solid #E0E0E0;
-            border-radius: 12px;
-            padding: 16px 20px;
-            margin-top: 16px;
-            color: #2C3E50;
-        ">
-            <strong style="color: #4ECDC4;">Model confidence (precision):</strong> {:.1%} — 
-            Estimates based on Random Forest regression (R² {:.2%}) and classification (F1 {:.2%}).
-        </div>
-        """.format(
-            r['model_confidence'],
-            metrics['regression']['R2'],
-            metrics['classification']['F1'],
-        ),
-        unsafe_allow_html=True,
-    )
+    conf_pct = r["model_confidence"] * 100
+    r2_pct = metrics["regression"]["R2"] * 100
+    f1_pct = metrics["classification"]["F1"] * 100
+    st.write("**Model confidence (precision):** {:.1f} pct — Estimates based on Random Forest regression (R2 {:.2f} pct) and classification (F1 {:.2f} pct).".format(conf_pct, r2_pct, f1_pct))
 
 
 def render_model_performance(ml_engine):
     st.markdown("---")
     st.subheader("Model performance")
-    reg = ml_engine.metrics['regression']
-    clf = ml_engine.metrics['classification']
+    reg = ml_engine.metrics["regression"]
+    clf = ml_engine.metrics["classification"]
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("**Regression (revenue prediction)**")
-        st.write(f"R²: {reg['R2']:.3f} | MAE: ${reg['MAE']:.2f} | RMSE: ${reg['RMSE']:.2f}")
+        st.write("R2: {:.3f} | MAE: ${:.2f} | RMSE: ${:.2f}".format(reg["R2"], reg["MAE"], reg["RMSE"]))
     with c2:
         st.markdown("**Classification (order status)**")
-        st.write(f"Accuracy: {clf['Accuracy']:.2%} | Precision: {clf['Precision']:.2%} | Recall: {clf['Recall']:.2%} | F1: {clf['F1']:.2%}")
+        st.write("Accuracy: {:.2f} pct | Precision: {:.2f} pct | Recall: {:.2f} pct | F1: {:.2f} pct".format(
+            clf["Accuracy"] * 100, clf["Precision"] * 100, clf["Recall"] * 100, clf["F1"] * 100
+        ))
 
     importance = ml_engine.get_feature_importance()
     st.markdown("**Feature importance (revenue model)**")
@@ -149,30 +112,13 @@ def render_decision_insights(insights):
     st.markdown("---")
     st.subheader("Decision insights")
     for item in insights:
-        st.markdown(
-            """
-            <div style="
-                background: #FFFFFF;
-                border-left: 4px solid #4ECDC4;
-                border-radius: 8px;
-                padding: 16px 20px;
-                margin-bottom: 12px;
-                color: #2C3E50;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            ">
-                <span style="font-size: 1.25rem;">{icon}</span>
-                <strong style="color: #2C3E50;">{title}</strong>
-                <p style="margin: 8px 0 0 0; opacity: 0.9;">{text}</p>
-                <p style="margin: 8px 0 0 0; color: #4ECDC4; font-weight: 600;">→ {action}</p>
-            </div>
-            """.format(
-                icon=item.get('icon', '📌'),
-                title=item.get('title', ''),
-                text=item.get('text', ''),
-                action=item.get('action', ''),
-            ),
-            unsafe_allow_html=True,
-        )
+        icon = item.get("icon", "")
+        title = item.get("title", "")
+        text = item.get("text", "")
+        action = item.get("action", "")
+        st.write("**{} {}**".format(icon, title))
+        st.write(text)
+        st.write("→ " + action)
 
 
 def render_roadmap():
@@ -188,56 +134,9 @@ def render_roadmap():
         ("7", "Feedback loop", "Use outcomes (actual revenue, cancellations) to retrain models."),
     ]
     for num, title, desc in steps:
-        st.markdown(
-            """
-            <div style="
-                display: flex;
-                align-items: flex-start;
-                gap: 12px;
-                margin-bottom: 12px;
-                padding: 12px 16px;
-                background: #FFFFFF;
-                border-radius: 10px;
-                border: 1px solid #E8E8E8;
-                color: #2C3E50;
-            ">
-                <span style="
-                    background: #4ECDC4;
-                    color: #2C3E50;
-                    width: 28px;
-                    height: 28px;
-                    border-radius: 50%;
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-weight: 700;
-                    flex-shrink: 0;
-                ">{num}</span>
-                <div>
-                    <strong>{title}</strong>
-                    <p style="margin: 4px 0 0 0; opacity: 0.85; font-size: 0.95rem;">{desc}</p>
-                </div>
-            </div>
-            """.format(num=num, title=title, desc=desc),
-            unsafe_allow_html=True,
-        )
+        st.write("**{} {}** — {}".format(num, title, desc))
 
 
 def render_footer():
     st.markdown("---")
-    st.markdown(
-        """
-        <div style="
-            text-align: center;
-            padding: 24px 16px;
-            color: #2C3E50;
-            opacity: 0.8;
-            font-size: 0.9rem;
-        ">
-            <strong>Data to $$$</strong> — Dr. Data Decision Intelligence. 
-            Demo uses synthetic data only. 
-            Colors: Cream (#FFF8E7), Navy (#2C3E50), Teal (#4ECDC4), Coral (#FF6B6B).
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.write("**Data to $$$** — Dr. Data Decision Intelligence. Demo uses synthetic data only.")

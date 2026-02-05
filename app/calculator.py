@@ -52,22 +52,26 @@ class RevenueIntelligence:
     def get_decision_insights(self, scenario_results):
         insights = []
 
-        if scenario_results['discount_recovery'] > 50000:
+        if scenario_results["discount_recovery"] > 50000:
+            r2_pct = self.ml.metrics["regression"]["R2"] * 100
+            rec = scenario_results["discount_recovery"]
             insights.append({
-                'type': 'High Impact',
-                'icon': '🎯',
-                'title': 'Discount Cap Strategy',
-                'text': f"With {self.ml.metrics['regression']['R2']:.1%} prediction accuracy, capping discounts recovers ${scenario_results['discount_recovery']:,.0f} annually",
-                'action': 'Implement dynamic pricing'
+                "type": "High Impact",
+                "icon": "🎯",
+                "title": "Discount Cap Strategy",
+                "text": "With {:.1f} pct prediction accuracy, capping discounts recovers ${:,.0f} annually".format(r2_pct, rec),
+                "action": "Implement dynamic pricing"
             })
 
-        if scenario_results['high_risk_orders'] > 100:
+        if scenario_results["high_risk_orders"] > 100:
+            prec_pct = self.ml.metrics["classification"]["Precision"] * 100
+            n_risk = scenario_results["high_risk_orders"]
             insights.append({
-                'type': 'Risk Alert',
-                'icon': '⚠️',
-                'title': f"{scenario_results['high_risk_orders']} Orders At Risk",
-                'text': f"Model precision ({self.ml.metrics['classification']['Precision']:.1%}) identifies cancellations before they happen",
-                'action': 'Trigger retention protocol'
+                "type": "Risk Alert",
+                "icon": "⚠️",
+                "title": "{} Orders At Risk".format(n_risk),
+                "text": "Model precision ({:.1f} pct) identifies cancellations before they happen".format(prec_pct),
+                "action": "Trigger retention protocol"
             })
 
         return insights

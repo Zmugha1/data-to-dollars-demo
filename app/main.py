@@ -42,12 +42,17 @@ def main():
         results = calculator.calculate_scenario(
             discount_cap, optimize_shipping, selected_cats
         )
-        if results is not None:
-            render_impact_dashboard(results, ml_engine.metrics)
-            render_decision_insights(calculator.get_decision_insights(results))
-            render_model_performance(ml_engine)
+        if results:
+            try:
+                render_impact_dashboard(results, ml_engine.metrics)
+                render_decision_insights(calculator.get_decision_insights(results))
+                render_model_performance(ml_engine)
+            except KeyError:
+                st.error("No results generated - check category selection")
+            except Exception:
+                st.error("Something went wrong. Check category selection or try again.")
         else:
-            st.warning("No data for the selected categories. Try other categories.")
+            st.error("No results generated - check category selection")
     else:
         st.warning("Select at least one category above to see Machine Learning (ML) predictions")
     
