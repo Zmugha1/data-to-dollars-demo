@@ -61,12 +61,12 @@ def render_controls(category_list):
     col1, col2, col3 = st.columns([1, 1, 2])
     with col1:
         discount_cap = st.slider(
-            "Discount cap (%)",
+            "Discount cap (e.g. 0.15 = 15 pct)",
             min_value=0.0,
             max_value=0.30,
             value=0.15,
             step=0.01,
-            format="%.0%%",
+            format="%.2f",
             help="Cap average discount for selected categories",
         )
     with col2:
@@ -94,7 +94,7 @@ def render_impact_dashboard(results, metrics):
         st.metric(
             "Annual savings (est.)",
             f"${r['annual_savings']:,.0f}",
-            f"{r['roi_percentage']:.1f}% of baseline",
+            f"{r['roi_percentage']:.1f} pct of baseline",
         )
     with col2:
         st.metric("Discount recovery", f"${r['discount_recovery']:,.0f}", "From cap")
