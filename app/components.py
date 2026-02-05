@@ -43,7 +43,6 @@ def render_controls(category_list):
             max_value=0.30,
             value=0.15,
             step=0.01,
-            format="%.2f",
             help="Cap average discount for selected categories",
         )
     with col2:

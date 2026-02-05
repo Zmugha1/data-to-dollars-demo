@@ -28,16 +28,27 @@ def init_ml(df):
     return MLEngine(df)
 
 def main():
-    df = load_data()
-    ml_engine = init_ml(df)
-    calculator = RevenueIntelligence(df, ml_engine)
-    
-    render_hero(calculator.baseline, ml_engine.metrics)
-    
-    discount_cap, optimize_shipping, selected_cats = render_controls(
-        df['Category'].unique().tolist()
-    )
-    
+    try:
+        df = load_data()
+        ml_engine = init_ml(df)
+        calculator = RevenueIntelligence(df, ml_engine)
+    except Exception as e:
+        st.error("Failed to load data or initialize models. Check that data/amazon_sample.csv exists.")
+        return
+
+    try:
+        render_hero(calculator.baseline, ml_engine.metrics)
+    except Exception:
+        st.error("Could not render summary. Check data format.")
+
+    try:
+        discount_cap, optimize_shipping, selected_cats = render_controls(
+            df["Category"].unique().tolist()
+        )
+    except Exception:
+        st.error("Could not render controls.")
+        return
+
     if selected_cats:
         results = calculator.calculate_scenario(
             discount_cap, optimize_shipping, selected_cats
@@ -47,7 +58,7 @@ def main():
                 render_impact_dashboard(results, ml_engine.metrics)
                 render_decision_insights(calculator.get_decision_insights(results))
                 render_model_performance(ml_engine)
-            except KeyError:
+            except (KeyError, TypeError):
                 st.error("No results generated - check category selection")
             except Exception:
                 st.error("Something went wrong. Check category selection or try again.")
@@ -55,9 +66,12 @@ def main():
             st.error("No results generated - check category selection")
     else:
         st.warning("Select at least one category above to see Machine Learning (ML) predictions")
-    
-    render_roadmap()
-    render_footer()
+
+    try:
+        render_roadmap()
+        render_footer()
+    except Exception:
+        pass
 
 if __name__ == "__main__":
     main()
