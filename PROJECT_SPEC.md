@@ -1,8 +1,5 @@
 # Project spec: Data to $$$ Revenue Leak Detector
 
-**Official name:** Data to $$$ Revenue Leak Detector (Dr. Data Decision Intelligence)  
-**Audience:** Business users and laypersons. No technical or data-science background required.
-
 ---
 
 ## 1. Business context
