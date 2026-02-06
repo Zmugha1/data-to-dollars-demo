@@ -16,7 +16,7 @@ st.set_page_config(
     page_title="Data to $$$ | Dr. Data Decision Intelligence",
     page_icon="💰",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 @st.cache_data
@@ -38,13 +38,14 @@ def show_how_to_page():
 
 
 def main():
-    st.sidebar.title("Menu")
-    page = st.sidebar.radio(
-        "Go to",
+    page = st.radio(
+        "Menu",
         ["Dashboard", "How to use"],
-        format_func=lambda x: "📊 Dashboard" if x == "Dashboard" else "📖 How to use",
-        label_visibility="visible",
+        horizontal=True,
+        label_visibility="collapsed",
     )
+    st.markdown("---")
+
     if page == "How to use":
         show_how_to_page()
         return
