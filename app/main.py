@@ -16,7 +16,7 @@ st.set_page_config(
     page_title="Data to $$$ | Dr. Data Decision Intelligence",
     page_icon="💰",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
 @st.cache_data
@@ -27,7 +27,28 @@ def load_data():
 def init_ml(df):
     return MLEngine(df)
 
+def show_how_to_page():
+    spec_path = Path(__file__).resolve().parent.parent / "PROJECT_SPEC.md"
+    if spec_path.exists():
+        content = spec_path.read_text(encoding="utf-8")
+        st.markdown(content)
+    else:
+        st.info("How-to guide is in PROJECT_SPEC.md in the repo.")
+        st.markdown("[View on GitHub](https://github.com/Zmugha1/data-to-dollars-demo/blob/main/PROJECT_SPEC.md)")
+
+
 def main():
+    st.sidebar.title("Menu")
+    page = st.sidebar.radio(
+        "Go to",
+        ["Dashboard", "How to use"],
+        format_func=lambda x: "📊 Dashboard" if x == "Dashboard" else "📖 How to use",
+        label_visibility="visible",
+    )
+    if page == "How to use":
+        show_how_to_page()
+        return
+
     try:
         df = load_data()
         ml_engine = init_ml(df)
