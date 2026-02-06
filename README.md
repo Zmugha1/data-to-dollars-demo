@@ -2,6 +2,16 @@
 
 **Dr. Data Decision Intelligence** — ML-powered revenue impact and risk detection on sample Amazon-style data.
 
+## How to use the demo (full instructions)
+
+**See [PROJECT_SPEC.md](PROJECT_SPEC.md)** for:
+
+- Business context and official app name  
+- What the app does and what “ROI” and “savings” mean  
+- Step-by-step how-to instructions for a layman audience  
+- What each number on the screen means (saved amount vs at-risk amount)  
+- Disclaimers and brand notes  
+
 ## Brand compliance
 
 - **Colors:** Cream (#FFF8E7), Navy (#2C3E50), Teal (#4ECDC4), Coral (#FF6B6B)
